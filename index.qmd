@@ -1,0 +1,70 @@
+---
+title: |
+  KIMMDY: A Monte-Carlo Reactive Molecular Dynamics Framework <i class="bi bi-boxes"></i>
+custom-authors:
+  - name: Jannik Buhr
+    affiliation: 1,2
+    extra:
+      - "jannik.buhr@h-its.org"
+      - '<a href="https://jmbuhr.de">jmbuhr.de</a>'
+  - name: Eric Harmann
+    affiliation: 1,2
+  - name: Kai Riedmiller
+    affiliation: 1,2
+  - name: Benedikt Rennekamp
+    affiliation: 1,2
+  - name: Frauke Gräter
+    affiliation: 1,2
+affiliation:
+  - Heidelberg Institute for Theoretical Studies (HITS)
+  - Heidelberg University
+link-citations: true
+validate-yaml: false
+format:
+  hits/poster-html:
+    css: ./poster.css
+    qrcode:
+      text: "https://github.com/hits-mbm-dev/kimmdy-poster"
+      size: "250"
+bibliography: references.bib
+---
+
+
+::: {#hero}
+::: {#qrcode}
+:::
+
+![](www/hits-logo-large-negative.png){#logo-hits .logo}
+![](www/logo-uni-hd-bw-inv.png){#logo-uni-hd .logo}
+
+::: {.call-to-action}
+Follow the QR code or visit
+<https://github.com/hits-mbm-dev/kimmdy-poster> for the repository of
+the paper draft. Or even better yet, talk to me in front of the poster!
+:::
+:::
+
+::: {#left-bar}
+# Abstract
+
+@kimmdy1
+@abrahamGROMACSHighPerformance2015
+
+:::
+
+::: {#right-bar}
+
+# Acknowledgments
+
+This project has received funding from the European Research Council
+(ERC) under the European Union's Horizon 2020 research and innovation
+program (grant agreement No. 101002812)\
+This work was supported by the Klaus Tschira Foundation\
+This poster was made with quarto [@quarto].
+
+# References
+
+::: {#refs}
+:::
+:::
+
