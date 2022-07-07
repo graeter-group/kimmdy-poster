@@ -88,9 +88,8 @@ sup {
   position: relative;
   background: #0F5D4F;
   color: #fff;
-  font-family: "Source Sans Pro", "Helvetica Neue", Arial, sans-serif;
   padding: 10%;
-  font-size: 48px;
+  font-size: 2rem;
 }
 
 #hero h1 {

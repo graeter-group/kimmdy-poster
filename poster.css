@@ -7,16 +7,30 @@ body {
     "L H R"
     "L H R";
     grid-template-columns: 1fr 1fr 1fr;
-    grid-template-rows: 1fr 10fr auto 1fr;
+    grid-template-rows: 1fr 10fr 1fr;
     margin: 0;
-    width: 46.3in;
-    height: 32.59669in;
+    /* width: 46.3in; */
+    /* height: 32.59669in; */
+    height: 594mm;
+    width: 841mm;
     grid-gap: 0.25in;
 }
 
-#hero {
-    background: #004082 !important;
+
+html {
+  font-family: "Roboto";
+  font-size: 1.05em;
+  color: #333;
+  height: 594mm;
+  width: 841mm;
 }
+
+@page {
+  height: 594mm;
+  width: 841mm;
+  margin: 0;
+}
+
 
 #hero h2 {
   text-align: center;
@@ -75,6 +89,10 @@ body {
 .abstract > p {
   margin: 0 3% 0 3%;
   text-align: justify;
+}
+
+#references {
+  /* margin-top: 20%; */
 }
 
 #mermaid-tooltip-1 {

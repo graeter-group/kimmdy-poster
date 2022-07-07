@@ -26,7 +26,7 @@ format:
     css: ./poster.css
     qrcode:
       text: "https://github.com/hits-mbm-dev/kimmdy-poster"
-      size: "300"
+      size: "200"
 bibliography: references.bib
 abstract: |
   Forcefield based molecular dynamics simulations allowed us to reach biologically relevant timescales and system sizes.
@@ -68,11 +68,19 @@ Or even better yet, talk to me in front of the poster!
 {{< meta abstract >}}
 :::
 
-![](img/2022-07-07-10-43-34.png)
+<!-- ![](img/2022-07-07-10-43-34.png) -->
+
+# Problem
+
+:::: {layout='[2,2]' layout-valign=center}
+![](./img/bondpull-initial.png)
+
+![](./img/bondpull-final.png)
+::::
 
 # Concept
 
-:::: {layout='[2,2]' layout-valign=center}
+:::: {layout='[2,2]' layout-valign=top}
 ```{mermaid}
 %%| label: fig-states
 %%| fig-cap: State diagram of KIMMDY 2.0
@@ -99,8 +107,8 @@ react2: reaction 2
 
 [*] --> parse
 parse --> eq
-eq --> run
-state run {
+eq --> sequence
+state sequence {
   [*] --> prod
   prod --> check
   check --> stop
@@ -116,17 +124,21 @@ state run {
   cycle --> prod
   cycle --> [*]: reached max_cycles
 }
-run --> [*]
+sequence --> [*]
 ```
 
+:::n2
+KIMMDY is designed to be extensible.
+
 ![A simplified version of the standardized output for reactions.](./img/kimmdy-reaction.svg){#fig-interface}
-::::
 
 With the arrhenius equation @eq-arrhenius:
 
 $$
 k = Ae^{\frac{-\Delta E^\dagger}{RT}}
 $${#eq-arrhenius}[@arrheniusUberDissociationswarmeUnd1889]
+:::
+::::
 
 
 :::
@@ -135,26 +147,29 @@ $${#eq-arrhenius}[@arrheniusUberDissociationswarmeUnd1889]
 
 
 # Usage
-
-::: {layout-ncol=2 layout-valign=center}
+::: {layout='[1,2]' layout-valign=center}
 ![A kimmdy.yml input file.](./img/kimmdy-yml.svg){#fig-kimmdy-yml}
 
+:::n2
 TODO
+
+- specify the files necessary for your simulation
+- include special requirements for further reactions
+- specify a sequence of steps
+- run KIMMY
+:::
 :::
 
 # Validation
 
-![Results will be validated with QMMM simulaitions using GROMACS and CP2K. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines](./img/bondpull-qm.png){#fig-validation}
-
-
+![Results will be validated with QMMM simulaitions using GROMACS[@abrahamGROMACSHighPerformance2015] and CP2K[@kuhneCP2KElectronicStructure2020]. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines](./img/bondpull-qm.png){#fig-validation}
 
 # Acknowledgments
 
 This project has received funding from the European Research Council
 (ERC) under the European Union's Horizon 2020 research and innovation
-program (grant agreement No. 101002812)\
-This work was supported by the Klaus Tschira Foundation\
-This poster was made with quarto [@quarto].
+program (grant agreement No. 101002812).\
+This work was supported by the Klaus Tschira Foundation.\
 
 ::: {layout='[1,3]'}
 ![](./img/gmx-logo.png)
