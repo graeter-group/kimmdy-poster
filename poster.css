@@ -1,16 +1,86 @@
 @import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css");
 
-#logo-hits {
-  width: 30%;
-  position: absolute;
-  bottom: 20%;
-  left: 10%;
+body {
+    display: grid;
+    grid-template-areas: "T H R"
+    "L H R"
+    "L H R"
+    "L H R";
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-rows: 1fr 10fr auto 1fr;
+    margin: 0;
+    width: 46.3in;
+    height: 32.59669in;
+    grid-gap: 0.25in;
 }
 
+#hero {
+    background: #004082 !important;
+}
+
+#hero h2 {
+  text-align: center;
+}
+
+#hero > h1:nth-of-type(1) {
+  padding-top: 0em;
+  margin: 0 auto 0 auto;
+  text-align: center;
+}
+
+#hero > p:nth-of-type(1) {
+    padding-top: 2em;
+    margin-left: -12%;
+    margin-right: -12%;
+    width: 124%;
+}
+
+#logo-hits {
+  width: 40%;
+  position: absolute;
+  bottom: 5%;
+  left: 5%;
+}
 
 #logo-uni-hd {
+  width: 40%;
+  position: absolute;
+  bottom: 5%;
+  right: 5%;
+}
+
+#logo-hbigs {
   width: 30%;
   position: absolute;
   bottom: 20%;
   right: 10%;
+}
+
+#qrcode {
+    bottom: 20%;
+    left: 10%;
+}
+
+.call-to-action {
+  /* margin-top: 140%; */
+  /* font-weight: 600; */
+}
+
+
+#hero > p {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.abstract > p {
+  margin: 0 3% 0 3%;
+  text-align: justify;
+}
+
+#mermaid-tooltip-1 {
+  display: none;
+}
+
+#mermaid-1657206757743 .statediagram-state rect.basic {
+    display: none;
 }

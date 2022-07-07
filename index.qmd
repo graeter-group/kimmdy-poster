@@ -1,6 +1,7 @@
 ---
 title: |
-  KIMMDY: A Monte-Carlo Reactive Molecular Dynamics Framework <i class="bi bi-boxes"></i>
+  KIMMDY 2.0 <i class="bi bi-boxes"></i>\
+  A Monte-Carlo Reactive Molecular Dynamics Framework
 custom-authors:
   - name: Jannik Buhr
     affiliation: 1,2
@@ -9,15 +10,15 @@ custom-authors:
       - '<a href="https://jmbuhr.de">jmbuhr.de</a>'
   - name: Eric Harmann
     affiliation: 1,2
-  - name: Kai Riedmiller
-    affiliation: 1,2
   - name: Benedikt Rennekamp
+    affiliation: 1,2
+  - name: Kai Riedmiller
     affiliation: 1,2
   - name: Frauke Gräter
     affiliation: 1,2
 affiliation:
   - Heidelberg Institute for Theoretical Studies (HITS)
-  - Heidelberg University
+  - Interdisciplinary Center for Scientific Computing, Heidelberg University
 link-citations: true
 validate-yaml: false
 format:
@@ -25,34 +26,127 @@ format:
     css: ./poster.css
     qrcode:
       text: "https://github.com/hits-mbm-dev/kimmdy-poster"
-      size: "250"
+      size: "300"
 bibliography: references.bib
+abstract: |
+  Forcefield based molecular dynamics simulations allowed us to reach biologically relevant timescales and system sizes.
+  A fundamental limit of this molecular mechanics approach is a lack of reactivity.
+  We present a framework for combining classical molecular dynamics simulations with a kinetic Monte Carlo approach to bridge timescales and allow reactions to occur within a simulation.
+  This is a generalization of our previous approach specifically targeted at bond breakages [@kimmdy1].
+  It is implemented as a user-friendly, extensible python module based on the open-source high-performance molecular dynamics software suit GROMACS [@abrahamGROMACSHighPerformance2015].
 ---
 
 
 ::: {#hero}
+
 ::: {#qrcode}
 :::
 
+## Bridging Timescales in Reactive Molecular Dynamics
+
+![](./img/collagen.png) 
+
+
 ![](www/hits-logo-large-negative.png){#logo-hits .logo}
 ![](www/logo-uni-hd-bw-inv.png){#logo-uni-hd .logo}
+![](./www/logo-hbigs-inv.png){#logo-hbigs .logo}
+
 
 ::: {.call-to-action}
-Follow the QR code or visit
-<https://github.com/hits-mbm-dev/kimmdy-poster> for the repository of
-the paper draft. Or even better yet, talk to me in front of the poster!
+Follow the QR code or visit\
+<https://github.com/hits-mbm-dev/kimmdy-poster>\
+for the repository of this poster.\
+Or even better yet, talk to me in front of the poster!
 :::
+
 :::
 
 ::: {#left-bar}
 # Abstract
 
-@kimmdy1
-@abrahamGROMACSHighPerformance2015
+:::{.abstract}
+{{< meta abstract >}}
+:::
+
+![](img/2022-07-07-10-43-34.png)
+
+# Concept
+
+:::: {layout='[2,2]' layout-valign=center}
+```{mermaid}
+%%| label: fig-states
+%%| fig-cap: State diagram of KIMMDY 2.0
+%%{init: {'theme': 'base',
+'themeVariables': {
+  'primaryColor': '#1E4287',
+  'primaryTextColor': '#eee',
+  'fontSize': '1rem',
+  'fontFamily': 'Roboto'
+}}}%%
+stateDiagram-v2
+parse: parse config.yml
+eq: [MD] equilibration
+prod: [MD] production
+check: [check] reaction criteria
+state stop <<choice>>
+state ask <<fork>>
+state decide <<join>>
+state cycle <<choice>>
+pick: [MC] pick reation
+execute: execute recipe
+react1: reaction 1
+react2: reaction 2
+
+[*] --> parse
+parse --> eq
+eq --> run
+state run {
+  [*] --> prod
+  prod --> check
+  check --> stop
+  stop --> prod
+  stop --> ask
+  ask --> react1
+  ask --> react2
+  react1 --> decide
+  react2 --> decide
+  decide --> pick
+  pick --> execute
+  execute --> cycle
+  cycle --> prod
+  cycle --> [*]: reached max_cycles
+}
+run --> [*]
+```
+
+![A simplified version of the standardized output for reactions.](./img/kimmdy-reaction.svg){#fig-interface}
+::::
+
+With the arrhenius equation @eq-arrhenius:
+
+$$
+k = Ae^{\frac{-\Delta E^\dagger}{RT}}
+$${#eq-arrhenius}[@arrheniusUberDissociationswarmeUnd1889]
+
 
 :::
 
 ::: {#right-bar}
+
+
+# Usage
+
+::: {layout-ncol=2 layout-valign=center}
+![A kimmdy.yml input file.](./img/kimmdy-yml.svg){#fig-kimmdy-yml}
+
+TODO
+:::
+
+# Validation
+
+![Results will be validated with QMMM simulaitions using GROMACS and CP2K. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines](./img/bondpull-qm.png){#fig-validation}
+
+
 
 # Acknowledgments
 
@@ -62,9 +156,65 @@ program (grant agreement No. 101002812)\
 This work was supported by the Klaus Tschira Foundation\
 This poster was made with quarto [@quarto].
 
+::: {layout='[1,3]'}
+![](./img/gmx-logo.png)
+
+![](./img/cp2k.png)
+:::
+
 # References
 
 ::: {#refs}
 :::
 :::
 
+
+
+
+<!--
+<https://carbon.now.sh/?bg=rgba%2830%2C66%2C135%2C0%29&t=nord&wt=boxy&l=auto&width=680&ds=true&dsyoff=20px&dsblur=34px&wc=true&wa=true&pv=89px&ph=73px&ln=true&fl=1&fm=Fira+Code&fs=18px&lh=148%25&si=false&es=4x&wm=false&code=class%2520ConversionType%28Enum%29%253A%250A%2520%2520%2520%2520BREAK%2520%253D%2520auto%28%29%250A%2520%2520%2520%2520MOVE%2520%253D%2520auto%28%29%250A%2520%2520%2520%2520CONNECT%2520%253D%2520auto%28%29%250A%250A%250A%2540dataclass%250Aclass%2520ConversionRecipe%253A%250A%2520%2520%2520%2520type%253A%2520list%255BConversionType%255D%250A%2520%2520%2520%2520atom_idx%253A%2520list%255Btuple%255Bint%252C%2520int%255D%255D%250A%250A%250A%2540dataclass%250Aclass%2520ReactionResult%253A%250A%2520%2520%2520%2520recipes%253A%2520list%255BConversionRecipe%255D%250A%2520%2520%2520%2520rates%253A%2520list%255Bfloat%255D>
+class ConversionType(Enum):
+    BREAK = auto()
+    MOVE = auto()
+    CONNECT = auto()
+
+
+@dataclass
+class ConversionRecipe:
+    type: list[ConversionType]
+    atom_idx: list[tuple[int, int]]
+
+
+@dataclass
+class ReactionResult:
+    recipes: list[ConversionRecipe]
+    rates: list[float]
+
+# kimmdy.yml
+dryrun: false
+out: 'out-dir
+ff: 'amber99sb-star-ildnp.ff'
+top: 'topol.top'
+gro: 'npt.gro'
+idx: 'backbone.ndx'
+plumed:
+  dat: 'plumed.dat'
+  distances: 'distances.dat'
+equilibration:
+  mdp: 'eq.mdp'
+production:
+  mdp: 'pull-f1500.mdp'
+reactions:
+  homolysis:
+    edis: 'edissoc.dat'
+    bonds: 'ffbonded.itp'
+  dummyreaction: default
+  hat:
+  	model: default
+sequence:
+  - equilibration
+  - mult: 2
+    tasks:
+      - production
+      - reactions
+-->

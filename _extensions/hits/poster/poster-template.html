@@ -9,6 +9,10 @@
     <link rel="icon" type="image/png" href="$favicon$" />
     $endif$
 
+    $if(math)$
+      $math$
+    $endif$
+
     $for(author-meta)$<meta name="author" content="$author-meta$" />$endfor$
     $if(date-meta)$<meta name="date" content="$date-meta$" />$endif$
     <title>$if(title-prefix)$$title-prefix$ - $endif$$pagetitle$</title>
