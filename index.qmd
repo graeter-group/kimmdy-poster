@@ -1,7 +1,7 @@
 ---
 title: |
   KIMMDY 2.0 <i class="bi bi-boxes"></i>\
-  A Monte-Carlo Reactive Molecular Dynamics Framework
+  A Monte Carlo Reactive Molecular Dynamics Framework
 custom-authors:
   - name: Jannik Buhr
     affiliation: 1,2
@@ -78,7 +78,7 @@ those that reach up to micro-, milli- or even full seconds can not.
 Forcefield-based molecular mechanics gets us into the microsecond timescale,
 but can not execute reactions. Even if it could, some reactions would still be inaccessible to our sampling due to their low rate.
 
-Kimmdy **skips ahead** in time by querying possible reactions about their rates and choosing a reaction based on (rejection free) **kinetic Monte Carlo**.
+KIMMDY **skips ahead** in time by querying possible reactions about their rates and choosing a reaction based on (rejection free) **kinetic Monte Carlo**.
 It then adjusts the topology of the system according to the reaction results and continues the MD simulation.
 :::
 
@@ -214,7 +214,7 @@ This project has received funding from the European Research Council
 program (grant agreement No. 101002812).\
 This work was supported by the Klaus Tschira Foundation.\
 
-::: {layout='[1,3]'}
+::: {layout='[1,1]'}
 ![](./img/gmx-logo.png)
 
 ![](./img/cp2k.png)
