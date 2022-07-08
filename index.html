@@ -86,19 +86,22 @@ Or even better yet, talk to me in front of the poster!</p>
 <div class="abstract">
 <p>Forcefield based molecular dynamics simulations allowed us to reach biologically relevant timescales and system sizes. A fundamental limit of this molecular mechanics approach is a lack of reactivity. We present a framework for combining classical molecular dynamics simulations with a kinetic Monte Carlo approach to bridge timescales and allow reactions to occur within a simulation. This is a generalization of our previous approach specifically targeted at bond breakages <span class="citation" data-cites="kimmdy1">(<a href="#ref-kimmdy1" role="doc-biblioref">1</a>)</span>. It is implemented as a user-friendly, extensible python module based on the open-source high-performance molecular dynamics software suit GROMACS <span class="citation" data-cites="abrahamGROMACSHighPerformance2015">(<a href="#ref-abrahamGROMACSHighPerformance2015" role="doc-biblioref">2</a>)</span>.</p>
 </div>
-<!-- ![](img/2022-07-07-10-43-34.png) -->
-<h1 id="problem">Problem</h1>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-center">
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
+<section id="problem" class="n1 quarto-layout-cell" style="flex-basis: 67.7%;justify-content: center;">
+<h1>Problem</h1>
+<p>Chemical <strong>reactions</strong> occur on <strong>many timescales</strong>. And while those happening within femtoseconds can feasibly be simulated by quantum mechanical calculations, those that reach up to micro-, milli- or even full seconds can not. Forcefield-based molecular mechanics gets us into the microsecond timescale, but can not execute reactions. Even if it could, some reactions would still be inaccessible to our sampling due to their low rate.</p>
+<p>Kimmdy <strong>skips ahead</strong> in time by querying possible reactions about their rates and choosing a reaction based on (rejection free) <strong>kinetic Monte Carlo</strong>. It then adjusts the topology of the system according to the reaction results and continues the MD simulation.</p>
+</section>
+<div class="n2 quarto-layout-cell" style="flex-basis: 32.3%;justify-content: center;">
 <p><img src="./img/bondpull-initial.png" class="img-fluid"></p>
-</div>
-<div class="quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p><img src="./img/bondpull-final.png" class="img-fluid"></p>
-</div>
+<div id="bond">
+<p><img src="./img/bondpull-final.png" class="img-fluid"> <i class="bi bi-scissors" id="scissors"></i></p>
 </div>
 </div>
-<h1 id="concept">Concept</h1>
+</div>
+</div>
+<h1 id="implementation">Implementation</h1>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-top">
 <div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
@@ -158,23 +161,24 @@ sequence --&gt; [*]
 </div>
 </div>
 <div class="n2 quarto-layout-cell" style="flex-basis: 50.0%;justify-content: center;">
-<p>KIMMDY is designed to be extensible.</p>
 <div id="fig-interface" class="quarto-figure quarto-figure-center anchored">
 <figure>
 <p><img src="./img/kimmdy-reaction.svg" class="img-fluid"></p>
 <p></p><figcaption aria-hidden="true">Figure 2: A simplified version of the standardized output for reactions.</figcaption><p></p>
 </figure>
 </div>
-<p>With the arrhenius equation <a href="#eq-arrhenius">Equation&nbsp;1</a>:</p>
+<p>KIMMDY is designed to be <strong>extensible</strong> with new reactions via a simple python plugin architecture. All a new reaction needs is a way of returning rates for possible reactions and the corresponding changes that need to be performed on the topology on acceptance.</p>
+<p>For example, the bond rupture reaction (<strong>homolysis</strong>) estimates transition state energies with a bond stretching potential and then uses the Arrhenius equation <a href="#eq-arrhenius">Equation&nbsp;1</a> to return rates.</p>
 <p><span id="eq-arrhenius"><span class="math display">
 k = Ae^{\frac{-\Delta E^\dagger}{RT}}
 \tag{1}</span></span><span class="citation" data-cites="arrheniusUberDissociationswarmeUnd1889">(<a href="#ref-arrheniusUberDissociationswarmeUnd1889" role="doc-biblioref">3</a>)</span></p>
+<p>Other reactions require more sophistication. Once a bond is ruptured, the remaining radicals can “jump” via <strong>Hydrogen Atom Transfer</strong> (HAT), for which you want to head over to the poster of Kai Riedmiller to see our <strong>Machine Learning</strong> solution for rate prediction.</p>
+<p><img src="./img/nn.svg" class="img-fluid"></p>
 </div>
 </div>
 </div>
 </div>
 <div id="right-bar">
-<h1 id="usage">Usage</h1>
 <div class="quarto-layout-panel">
 <div class="quarto-layout-row quarto-layout-valign-center">
 <div class="quarto-layout-cell" style="flex-basis: 33.3%;justify-content: center;">
@@ -186,23 +190,41 @@ k = Ae^{\frac{-\Delta E^\dagger}{RT}}
 </div>
 </div>
 <div class="n2 quarto-layout-cell" style="flex-basis: 66.7%;justify-content: center;">
-<p>TODO</p>
+<h1 id="usage">Usage</h1>
 <ul>
 <li>specify the files necessary for your simulation</li>
 <li>include special requirements for further reactions</li>
 <li>specify a sequence of steps</li>
-<li>run KIMMY</li>
+<li>run KIMMDY</li>
+</ul>
+<h1 id="current-challenges">Current Challenges</h1>
+<ul>
+<li>tune a generalized <code>topology changer</code>
+<ul>
+<li>that also handles large systems</li>
+<li>works with additional forcefield parameters and atom types</li>
+</ul></li>
+<li>include further reactions
+<ul>
+<li>Hydrogen Atom Transfer (HAT)</li>
+<li>Hydrolysis</li>
+</ul></li>
 </ul>
 </div>
 </div>
 </div>
 <h1 id="validation">Validation</h1>
+<p>The first version of KIMMDY <span class="citation" data-cites="kimmdy1">(<a href="#ref-kimmdy1" role="doc-biblioref">1</a>)</span> is used to predict bond ruptures in collagen (the most abundant protein in connective tissue). Those are validated in experiments using <strong>Electron Paramagnetic Resonance</strong> (EPR), which detects the radicals produced by homolytic bond ruptures. Other reactions are harder to measure <em>in vitro</em>.</p>
+<p>Further results will be validated with <strong>QMMM simulations</strong> using GROMACS<span class="citation" data-cites="abrahamGROMACSHighPerformance2015">(<a href="#ref-abrahamGROMACSHighPerformance2015" role="doc-biblioref">2</a>)</span> and CP2K<span class="citation" data-cites="kuhneCP2KElectronicStructure2020">(<a href="#ref-kuhneCP2KElectronicStructure2020" role="doc-biblioref">4</a>)</span>. Together they can act as a molecular magnifying glass. Once KIMMDY has identified a region of interest and potential reactions, we can further investigate this site as a QM region within the context of a MM simulation.</p>
 <div id="fig-validation" class="quarto-figure quarto-figure-center anchored">
 <figure>
 <p><img src="./img/bondpull-qm.png" class="img-fluid"></p>
-<p></p><figcaption aria-hidden="true">Figure 4: Results will be validated with QMMM simulaitions using GROMACS<span class="citation" data-cites="abrahamGROMACSHighPerformance2015">(<a href="#ref-abrahamGROMACSHighPerformance2015" role="doc-biblioref">2</a>)</span> and CP2K<span class="citation" data-cites="kuhneCP2KElectronicStructure2020">(<a href="#ref-kuhneCP2KElectronicStructure2020" role="doc-biblioref">4</a>)</span>. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines</figcaption><p></p>
+<p></p><figcaption aria-hidden="true">Figure 4: Snapshot from a QMMM simulation. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines</figcaption><p></p>
 </figure>
 </div>
+<h1 id="availability">Availability</h1>
+<p>KIMMDY 2.0 is not ready just yet, but expect to find the actively developed version here <strong>soon</strong>:<br>
+<a href="https://github.com/hits-mbm-dev/kimmdy" class="uri">https://github.com/hits-mbm-dev/kimmdy</a>.</p>
 <h1 id="acknowledgments">Acknowledgments</h1>
 <p>This project has received funding from the European Research Council (ERC) under the European Union’s Horizon 2020 research and innovation program (grant agreement No.&nbsp;101002812).<br>
 This work was supported by the Klaus Tschira Foundation.<br>
@@ -233,53 +255,6 @@ This work was supported by the Klaus Tschira Foundation.<br>
 </div>
 </div>
 </div>
-<!--
-<https://carbon.now.sh/?bg=rgba%2830%2C66%2C135%2C0%29&t=nord&wt=boxy&l=auto&width=680&ds=true&dsyoff=20px&dsblur=34px&wc=true&wa=true&pv=89px&ph=73px&ln=true&fl=1&fm=Fira+Code&fs=18px&lh=148%25&si=false&es=4x&wm=false&code=class%2520ConversionType%28Enum%29%253A%250A%2520%2520%2520%2520BREAK%2520%253D%2520auto%28%29%250A%2520%2520%2520%2520MOVE%2520%253D%2520auto%28%29%250A%2520%2520%2520%2520CONNECT%2520%253D%2520auto%28%29%250A%250A%250A%2540dataclass%250Aclass%2520ConversionRecipe%253A%250A%2520%2520%2520%2520type%253A%2520list%255BConversionType%255D%250A%2520%2520%2520%2520atom_idx%253A%2520list%255Btuple%255Bint%252C%2520int%255D%255D%250A%250A%250A%2540dataclass%250Aclass%2520ReactionResult%253A%250A%2520%2520%2520%2520recipes%253A%2520list%255BConversionRecipe%255D%250A%2520%2520%2520%2520rates%253A%2520list%255Bfloat%255D>
-class ConversionType(Enum):
-    BREAK = auto()
-    MOVE = auto()
-    CONNECT = auto()
-
-
-@dataclass
-class ConversionRecipe:
-    type: list[ConversionType]
-    atom_idx: list[tuple[int, int]]
-
-
-@dataclass
-class ReactionResult:
-    recipes: list[ConversionRecipe]
-    rates: list[float]
-
-# kimmdy.yml
-dryrun: false
-out: 'out-dir
-ff: 'amber99sb-star-ildnp.ff'
-top: 'topol.top'
-gro: 'npt.gro'
-idx: 'backbone.ndx'
-plumed:
-  dat: 'plumed.dat'
-  distances: 'distances.dat'
-equilibration:
-  mdp: 'eq.mdp'
-production:
-  mdp: 'pull-f1500.mdp'
-reactions:
-  homolysis:
-    edis: 'edissoc.dat'
-    bonds: 'ffbonded.itp'
-  dummyreaction: default
-  hat:
-    model: default
-sequence:
-  - equilibration
-  - mult: 2
-    tasks:
-      - production
-      - reactions
--->
 
 <script type="text/javascript">
 (function() {

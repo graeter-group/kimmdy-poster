@@ -44,9 +44,9 @@ html {
 
 #hero > p:nth-of-type(1) {
     padding-top: 2em;
-    margin-left: -12%;
-    margin-right: -12%;
-    width: 124%;
+    margin-left: -12.5%;
+    margin-right: -12.5%;
+    width: 125%;
 }
 
 #logo-hits {
@@ -101,4 +101,21 @@ html {
 
 #mermaid-1657206757743 .statediagram-state rect.basic {
     display: none;
+}
+
+#bond {
+  position: relative;
+}
+
+#scissors {
+    position: absolute;
+    top: 43%;
+    left: 40%;
+    color: red;
+    font-size: 2.5rem;
+    transform: rotate(25deg);
+}
+
+#implementation {
+  margin-top: -1rem;
 }

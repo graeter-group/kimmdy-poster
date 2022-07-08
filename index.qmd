@@ -68,17 +68,32 @@ Or even better yet, talk to me in front of the poster!
 {{< meta abstract >}}
 :::
 
-<!-- ![](img/2022-07-07-10-43-34.png) -->
-
+:::: {layout='[2.1,1]' layout-valign=center}
+:::n1
 # Problem
 
-:::: {layout='[2,2]' layout-valign=center}
+Chemical **reactions** occur on **many timescales**.
+And while those happening within femtoseconds can feasibly be simulated by quantum mechanical calculations,
+those that reach up to micro-, milli- or even full seconds can not.
+Forcefield-based molecular mechanics gets us into the microsecond timescale,
+but can not execute reactions. Even if it could, some reactions would still be inaccessible to our sampling due to their low rate.
+
+Kimmdy **skips ahead** in time by querying possible reactions about their rates and choosing a reaction based on (rejection free) **kinetic Monte Carlo**.
+It then adjusts the topology of the system according to the reaction results and continues the MD simulation.
+:::
+
+:::n2
 ![](./img/bondpull-initial.png)
 
+:::{#bond}
 ![](./img/bondpull-final.png)
+<i class="bi bi-scissors" id='scissors'></i>
+:::
+:::
 ::::
 
-# Concept
+
+# Implementation
 
 :::: {layout='[2,2]' layout-valign=top}
 ```{mermaid}
@@ -128,41 +143,69 @@ sequence --> [*]
 ```
 
 :::n2
-KIMMDY is designed to be extensible.
-
 ![A simplified version of the standardized output for reactions.](./img/kimmdy-reaction.svg){#fig-interface}
 
-With the arrhenius equation @eq-arrhenius:
+
+KIMMDY is designed to be **extensible** with new reactions via a simple python plugin architecture.
+All a new reaction needs is a way of returning rates for possible reactions and the corresponding changes that need to be performed on the topology on acceptance.
+
+For example, the bond rupture reaction (**homolysis**) estimates transition state energies with a bond stretching potential and then uses the Arrhenius equation @eq-arrhenius to return rates.
 
 $$
 k = Ae^{\frac{-\Delta E^\dagger}{RT}}
 $${#eq-arrhenius}[@arrheniusUberDissociationswarmeUnd1889]
+
+Other reactions require more sophistication.
+Once a bond is ruptured, the remaining radicals can "jump" via **Hydrogen Atom Transfer** (HAT),
+for which you want to head over to the poster of Kai Riedmiller to see our **Machine Learning** solution for rate prediction.
+
+![](./img/nn.svg)
 :::
 ::::
-
 
 :::
 
 ::: {#right-bar}
 
 
-# Usage
 ::: {layout='[1,2]' layout-valign=center}
 ![A kimmdy.yml input file.](./img/kimmdy-yml.svg){#fig-kimmdy-yml}
 
 :::n2
-TODO
+# Usage
 
 - specify the files necessary for your simulation
 - include special requirements for further reactions
 - specify a sequence of steps
-- run KIMMY
+- run KIMMDY
+
+# Current Challenges
+
+- tune a generalized `topology changer`
+  - that also handles large systems
+  - works with additional forcefield parameters and atom types
+- include further reactions
+  - Hydrogen Atom Transfer (HAT)
+  - Hydrolysis
 :::
 :::
 
 # Validation
 
-![Results will be validated with QMMM simulaitions using GROMACS[@abrahamGROMACSHighPerformance2015] and CP2K[@kuhneCP2KElectronicStructure2020]. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines](./img/bondpull-qm.png){#fig-validation}
+The first version of KIMMDY [@kimmdy1] is used to predict bond ruptures in collagen (the most abundant protein in connective tissue).
+Those are validated in experiments using **Electron Paramagnetic Resonance** (EPR), which detects the radicals produced by homolytic bond ruptures.
+Other reactions are harder to measure _in vitro_.
+
+Further results will be validated with **QMMM simulations** using GROMACS[@abrahamGROMACSHighPerformance2015] and CP2K[@kuhneCP2KElectronicStructure2020].
+Together they can act as a molecular magnifying glass.
+Once KIMMDY has identified a region of interest and potential reactions, we can further investigate this site as a QM region within the context of a MM simulation.
+
+![Snapshot from a QMMM simulation. QM atoms are shown as spheres, MM atoms and bonds shown as faint lines](./img/bondpull-qm.png){#fig-validation}
+
+# Availability
+
+KIMMDY 2.0 is not ready just yet, but expect to find the actively developed version here **soon**:\
+<https://github.com/hits-mbm-dev/kimmdy>.
 
 # Acknowledgments
 
@@ -183,53 +226,3 @@ This work was supported by the Klaus Tschira Foundation.\
 :::
 :::
 
-
-
-
-<!--
-<https://carbon.now.sh/?bg=rgba%2830%2C66%2C135%2C0%29&t=nord&wt=boxy&l=auto&width=680&ds=true&dsyoff=20px&dsblur=34px&wc=true&wa=true&pv=89px&ph=73px&ln=true&fl=1&fm=Fira+Code&fs=18px&lh=148%25&si=false&es=4x&wm=false&code=class%2520ConversionType%28Enum%29%253A%250A%2520%2520%2520%2520BREAK%2520%253D%2520auto%28%29%250A%2520%2520%2520%2520MOVE%2520%253D%2520auto%28%29%250A%2520%2520%2520%2520CONNECT%2520%253D%2520auto%28%29%250A%250A%250A%2540dataclass%250Aclass%2520ConversionRecipe%253A%250A%2520%2520%2520%2520type%253A%2520list%255BConversionType%255D%250A%2520%2520%2520%2520atom_idx%253A%2520list%255Btuple%255Bint%252C%2520int%255D%255D%250A%250A%250A%2540dataclass%250Aclass%2520ReactionResult%253A%250A%2520%2520%2520%2520recipes%253A%2520list%255BConversionRecipe%255D%250A%2520%2520%2520%2520rates%253A%2520list%255Bfloat%255D>
-class ConversionType(Enum):
-    BREAK = auto()
-    MOVE = auto()
-    CONNECT = auto()
-
-
-@dataclass
-class ConversionRecipe:
-    type: list[ConversionType]
-    atom_idx: list[tuple[int, int]]
-
-
-@dataclass
-class ReactionResult:
-    recipes: list[ConversionRecipe]
-    rates: list[float]
-
-# kimmdy.yml
-dryrun: false
-out: 'out-dir
-ff: 'amber99sb-star-ildnp.ff'
-top: 'topol.top'
-gro: 'npt.gro'
-idx: 'backbone.ndx'
-plumed:
-  dat: 'plumed.dat'
-  distances: 'distances.dat'
-equilibration:
-  mdp: 'eq.mdp'
-production:
-  mdp: 'pull-f1500.mdp'
-reactions:
-  homolysis:
-    edis: 'edissoc.dat'
-    bonds: 'ffbonded.itp'
-  dummyreaction: default
-  hat:
-  	model: default
-sequence:
-  - equilibration
-  - mult: 2
-    tasks:
-      - production
-      - reactions
--->
